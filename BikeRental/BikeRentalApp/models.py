@@ -19,3 +19,34 @@ class Bike(models.Model):
   def __str__(self):
     return "{} - {}".format(self.bike_type,self.color)
 
+class Renter(models.Model):
+  first_name = models.CharField(max_length=30)
+  last_name = models.CharField(max_length=30)
+  phone = models.IntegerField(max_length=15)
+  vip_num = models.IntegerField(default=0)
+
+  def __str__(self):
+    return "{} {} - {}".format(self.first_name,self.last_name,self.phone)
+
+class Rental(models.Model):
+  bike = models.ForeignKey(Bike,on_delete=models.CASCADE)
+  renter = models.ForeignKey(Renter,on_delete=models.CASCADE)
+  date = models.DateField(default=datetime.date.today) 
+  price = models.FloatField(default=0)
+
+  def calc_price(self):
+    curr_price = BASE_PRICE
+
+    if (self.bike.bike_type == "TA"):
+      curr_price += TANDEM_SURCHARGE
+    elif (self.bike.bike_type == "EL"):
+      curr_price += ELECTRIC_SURCHARGE
+
+    if (self.renter.vipu_num > 0):
+      curr_price -= curr_price * 20/100
+
+    self.price = curr_price
+    
+
+
+
